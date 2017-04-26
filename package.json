@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/willclarktech/blockchain-logger/issues"
   },
-  "homepage": "https://github.com/willclarktech/blockchain-logger#readme"
+  "homepage": "https://github.com/willclarktech/blockchain-logger#readme",
+  "devDependencies": {
+    "flow-bin": "^0.44.2"
+  }
 }
