@@ -1,0 +1,24 @@
+{
+  "name": "blockchain-logger",
+  "version": "1.0.0",
+  "description": "Store logs in a blockchain structure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willclarktech/blockchain-logger.git"
+  },
+  "keywords": [
+    "blockchain",
+    "logs",
+    "twitter"
+  ],
+  "author": "willclarktech",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/willclarktech/blockchain-logger/issues"
+  },
+  "homepage": "https://github.com/willclarktech/blockchain-logger#readme"
+}
