@@ -4,5 +4,7 @@
   ],
   "plugins": [
     "transform-flow-strip-types"
-  ]
+  ],
+  "comments": false,
+  "ignore": "src/*.types.js"
 }

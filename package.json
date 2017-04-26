@@ -2,9 +2,9 @@
   "name": "blockchain-logger",
   "version": "1.0.0",
   "description": "Store logs in a blockchain structure",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "postinstall": "babel src --out-file index.js",
+    "postinstall": "babel --comments false src --out-dir lib",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
     "lint:fix": "npm run lint --fix",
