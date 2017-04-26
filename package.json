@@ -23,6 +23,7 @@
   "homepage": "https://github.com/willclarktech/blockchain-logger#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "flow-bin": "^0.44.2"
   }
 }
