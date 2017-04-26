@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable immutable/no-mutation, immutable/no-this */
 import crypto from 'crypto'
 import type {
   Log,
