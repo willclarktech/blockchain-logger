@@ -24,8 +24,14 @@
   "homepage": "https://github.com/willclarktech/blockchain-logger#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-esnext": "^1.1.3",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.1.3",
+    "eslint-plugin-flowtype": "^2.32.1",
+    "eslint-plugin-immutable": "^1.0.0",
+    "eslint-plugin-import": "^2.2.0",
     "flow-bin": "^0.44.2"
   },
   "dependencies": {
