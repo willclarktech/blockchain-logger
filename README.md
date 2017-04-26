@@ -1,5 +1,7 @@
 # blockchain-logger
 
+![logs](http://www.publicdomainpictures.net/pictures/140000/velka/firewood-background-1443615932MR7.jpg)
+
 This project provides loggers which implement a basic blockchain structure. Data is put into the following block format and stored according to the chosen strategy:
 
 ```json
