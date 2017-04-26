@@ -1,0 +1,8 @@
+{
+  "presets": [
+    "esnext"
+  ],
+  "plugins": [
+    "transform-flow-strip-types"
+  ]
+}
