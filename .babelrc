@@ -6,5 +6,7 @@
     "transform-flow-strip-types"
   ],
   "comments": false,
-  "ignore": "src/*.types.js"
+  "compact": true,
+  "ignore": "src/*.types.js",
+  "minified": true
 }
