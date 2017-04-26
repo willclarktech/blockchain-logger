@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "airbnb-base",
+    "plugin:flowtype/recommended"
+  ],
+  "plugins": [
+    "flowtype",
+    "immutable",
+    "import"
+  ],
+  "rules": {
+    "arrow-parens": [2, "as-needed"],
+    "no-confusing-arrow": 0,
+    "no-console": [2, { "allow": ["info", "warn", "error"] }],
+    "no-nested-ternary": 0,
+    "semi": [2, "never"],
+    "immutable/no-let": 2
+  }
+}
