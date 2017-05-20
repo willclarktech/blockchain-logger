@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "postinstall": "babel --comments false src --out-dir lib",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "babel-node tests",
     "lint": "eslint src",
     "lint:fix": "npm run lint --fix",
     "typecheck": "flow",
