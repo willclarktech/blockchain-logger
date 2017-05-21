@@ -39,6 +39,7 @@
     "flow-bin": "^0.44.2"
   },
   "dependencies": {
+    "axios": "^0.16.1",
     "bitcoinjs-lib": "^3.0.3",
     "lodash": "^4.17.4",
     "twitter": "^1.7.0"
