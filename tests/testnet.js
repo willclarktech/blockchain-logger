@@ -16,6 +16,14 @@ const testStore = () =>
     .store(LOG)
     .then(assert.ok)
 
+const testGetUnspentTransactions = () =>
+  testnetLogger
+    .getUnspentTransactions()
+    .then(transactions => {
+      const tx = transactions[0]
+      assert.ok(tx.addresses[0] === testnetLogger.keyPair.getAddress())
+    })
+
 const testBuildTransaction = () => {
   assert.ok(
     testnetLogger.buildTransaction(Buffer.from(LOG)),
@@ -37,8 +45,9 @@ const testPushTransaction = () => {
 
 Promise.all([
   sanityCheck(),
-  testStore(),
-  testBuildTransaction(),
-  testPushTransaction(),
+  // testStore(),
+  testGetUnspentTransactions(),
+  // testBuildTransaction(),
+  // testPushTransaction(),
 ])
   .catch(console.error)

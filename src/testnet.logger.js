@@ -47,6 +47,14 @@ class TestnetLogger<D> extends Logger<D> {
       .then(() => true)
   }
 
+  async getUnspentTransactions(): Promise<number> {
+    const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
+    const address = this.keyPair.getAddress()
+    const url = `${base}/${address}/unspent`
+    return this.client.get(url)
+      .then(response => response.data.unspent)
+  }
+
   buildTransaction(data: Buffer): Transaction {
     if (data.length > 80 - this.prefix.length) throw new Error('Data is too long to store via OP_RETURN.')
     const inputTxId = 'a14ee2d11031ef64ea80645f685bb8980d4584b98398b496988e9adf7e5d2540'
