@@ -47,6 +47,13 @@ class TestnetLogger<D> extends Logger<D> {
       .then(() => true)
   }
 
+  async getFee(): Promise<number> {
+    const medianTransactionSize = 226 // bytes
+    const url = 'https://bitcoinfees.21.co/api/v1/fees/recommended'
+    return this.client.get(url)
+      .then(response => response.data.fastestFee * medianTransactionSize)
+  }
+
   async getUnspentTransactions(): Promise<Array<Object>> {
     const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
     const address = this.keyPair.getAddress()
@@ -62,7 +69,7 @@ class TestnetLogger<D> extends Logger<D> {
     const unspent = transactions[0]
     const inputTxId = unspent.txid
     const remainingBalance = unspent.value_int
-    const fee = 5000
+    const fee = await this.getFee()
     const outputAmount = remainingBalance - fee
     const opReturnData = Buffer.concat([this.prefix, data])
     // $FlowFixMe: flow-type defs out of date

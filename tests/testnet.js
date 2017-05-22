@@ -14,7 +14,12 @@ const sanityCheck = () => assert.ok(testnetLogger)
 const testStore = () =>
   testnetLogger
     .store(LOG)
+    .then(a => console.log(a) || a)
     .then(assert.ok)
+
+const testGetFee = () =>
+  testnetLogger.getFee()
+    .then(fee => assert.ok(typeof fee === 'number'))
 
 const testGetUnspentTransactions = () =>
   testnetLogger
@@ -43,6 +48,7 @@ const testPushTransaction = () => {
 Promise.all([
   sanityCheck(),
   testStore(),
+  testGetFee(),
   testGetUnspentTransactions(),
   testBuildTransaction(),
   testPushTransaction(),
