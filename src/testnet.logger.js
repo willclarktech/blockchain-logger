@@ -91,7 +91,7 @@ class TestnetLogger<D> extends Logger<D> {
       'https://testnet-api.smartbit.com.au/v1/blockchain/pushtx',
       { hex: transaction.toHex() },
     )
-      .then(response => response.data, error => error.response.data)
+      .then(response => response.data)
   }
 }
 

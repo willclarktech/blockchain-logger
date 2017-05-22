@@ -14,7 +14,6 @@ const sanityCheck = () => assert.ok(testnetLogger)
 const testStore = () =>
   testnetLogger
     .store(LOG)
-    .then(a => console.log(a) || a)
     .then(assert.ok)
 
 const testGetFee = () =>
