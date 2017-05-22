@@ -24,15 +24,12 @@ const testGetUnspentTransactions = () =>
       assert.ok(tx.addresses[0] === testnetLogger.keyPair.getAddress())
     })
 
-const testBuildTransaction = () => {
-  assert.ok(
-    testnetLogger.buildTransaction(Buffer.from(LOG)),
-  )
-  assert.throws(
-    () => testnetLogger.buildTransaction(Buffer.alloc(79, 'A')),
-    /Data is too long to store via OP_RETURN\./,
-  )
-}
+const testBuildTransaction = () => Promise.all([
+  testnetLogger.buildTransaction(Buffer.from(LOG))
+    .then(assert.ok),
+  testnetLogger.buildTransaction(Buffer.alloc(79, 'A'))
+    .then(assert.fail, assert.ok),
+])
 
 const testPushTransaction = () => {
   const transaction = {
@@ -45,9 +42,9 @@ const testPushTransaction = () => {
 
 Promise.all([
   sanityCheck(),
-  // testStore(),
+  testStore(),
   testGetUnspentTransactions(),
-  // testBuildTransaction(),
-  // testPushTransaction(),
+  testBuildTransaction(),
+  testPushTransaction(),
 ])
   .catch(console.error)

@@ -42,12 +42,12 @@ class TestnetLogger<D> extends Logger<D> {
 
   async store(logString: string): Promise<boolean> {
     const data = Buffer.from(logString)
-    const transaction = this.buildTransaction(data)
-    return this.pushTransaction(transaction)
+    return this.buildTransaction(data)
+      .then(this.pushTransaction.bind(this))
       .then(() => true)
   }
 
-  async getUnspentTransactions(): Promise<number> {
+  async getUnspentTransactions(): Promise<Array<Object>> {
     const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
     const address = this.keyPair.getAddress()
     const url = `${base}/${address}/unspent`
@@ -55,11 +55,13 @@ class TestnetLogger<D> extends Logger<D> {
       .then(response => response.data.unspent)
   }
 
-  buildTransaction(data: Buffer): Transaction {
+  async buildTransaction(data: Buffer): Promise<Transaction> {
     if (data.length > 80 - this.prefix.length) throw new Error('Data is too long to store via OP_RETURN.')
-    const inputTxId = 'a14ee2d11031ef64ea80645f685bb8980d4584b98398b496988e9adf7e5d2540'
     const myAddress = this.keyPair.getAddress()
-    const remainingBalance = 199990000
+    const transactions = await this.getUnspentTransactions()
+    const unspent = transactions[0]
+    const inputTxId = unspent.txid
+    const remainingBalance = unspent.value_int
     const fee = 5000
     const outputAmount = remainingBalance - fee
     const opReturnData = Buffer.concat([this.prefix, data])
