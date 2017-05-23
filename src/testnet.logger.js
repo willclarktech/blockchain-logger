@@ -14,16 +14,10 @@ import type {
   Network,
   Transaction,
 } from 'bitcoinjs-lib'
-
-type PushTransactionResponse = {
-  error: ?{ message: string },
-}
-
-type TestnetLoggerOptions = {
-  maxFee: ?number,
-  prefix: ?string,
-  privateKey: string,
-}
+import type {
+  PushTransactionResponse,
+  TestnetLoggerOptions,
+} from './testnet.types'
 
 class TestnetLogger {
   client: Axios
