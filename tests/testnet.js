@@ -53,4 +53,7 @@ Promise.all([
   testBuildTransaction(),
   testPushTransaction(),
 ])
-  .catch(console.error)
+  .catch(err => err.response
+    ? console.error(err.response.data)
+    : console.error(err),
+  )
