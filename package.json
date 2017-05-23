@@ -1,6 +1,6 @@
 {
   "name": "blockchain-logger",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Store logs in a blockchain structure",
   "main": "lib/index.js",
   "scripts": {
