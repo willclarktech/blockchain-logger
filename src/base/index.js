@@ -56,6 +56,18 @@ class Logger<D> {
   }
 
   async getLoggedData(ensureHashConsistency: ?boolean): Promise<Array<D>> {
+    return this.getLogs()
+      .then(logs => ensureHashConsistency
+        ? this.getConsistentLogs(logs)
+        : logs,
+      )
+      .then(logs => logs
+        .map(log => log.data)
+        .filter(Boolean),
+      )
+  }
+
+  async getConsistentLogs(logs: Array<Log<D>>): Promise<Array<Log<D>>> {
     const removeInconsistentLogs = (aggregator: LogAggregator, log: Log<D>): LogAggregator => {
       const { previousHash, validLogs } = aggregator
       const { hash, meta } = log
@@ -72,17 +84,31 @@ class Logger<D> {
       validLogs: [],
     }
 
-    return this.getLogs()
-      .then(logs => ensureHashConsistency
-        ? logs
-          .reduce(removeInconsistentLogs, initialLogAggregator)
-          .validLogs
-        : logs,
-      )
-      .then(logs => logs
-        .map(log => log.data)
-        .filter(Boolean),
-      )
+    const validLogs = logs
+      .reduce(removeInconsistentLogs, initialLogAggregator)
+      .validLogs
+
+    const enforceBlockchainHashes = (aggregator, log: Log<D>) => {
+      const { validHashes, matchingLogs } = aggregator
+      const hashIndex = validHashes.indexOf(log.hash)
+      return hashIndex === -1
+        ? aggregator
+        : {
+          validHashes: validHashes.slice(hashIndex + 1),
+          matchingLogs: [...matchingLogs, log],
+        }
+    }
+
+    return this.blockchainLogger
+      ? this.blockchainLogger
+        .getLogs()
+        .then(validHashes => {
+          const initialHashAggregator = { validHashes, matchingLogs: [] }
+          return validLogs
+            .reduce(enforceBlockchainHashes, initialHashAggregator)
+        })
+        .then(result => result.matchingLogs)
+      : validLogs
   }
 
   async getMostRecentHash(): Promise<string> {
