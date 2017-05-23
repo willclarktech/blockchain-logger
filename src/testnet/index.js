@@ -17,7 +17,7 @@ import type {
 import type {
   PushTransactionResponse,
   TestnetLoggerOptions,
-} from './testnet.types'
+} from './types'
 
 class TestnetLogger {
   client: Axios

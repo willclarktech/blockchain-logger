@@ -1,8 +1,8 @@
 // @flow
 import fs from 'fs'
 import { flatten } from 'lodash'
-import Logger from './base.logger'
-import type { Log, LoggerOptions } from './base.types'
+import Logger from '../base'
+import type { Log, LoggerOptions } from '../base/types'
 
 type LocalFileLoggerOptions = LoggerOptions & {
   logPath: string,

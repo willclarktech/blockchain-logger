@@ -5,7 +5,7 @@ import type {
   LogAggregator,
   LoggerOptions,
   LogWithoutHash,
-} from './base.types'
+} from './types'
 
 class Logger<D> {
   genesisHash: string
