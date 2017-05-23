@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "babel --comments false src --out-dir lib",
     "test": "babel-node tests",
-    "lint": "eslint src",
+    "lint": "eslint src tests",
     "lint:fix": "npm run lint --fix",
     "typecheck": "flow",
     "checks": "npm run lint && npm run typecheck"
