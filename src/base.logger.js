@@ -14,7 +14,7 @@ class Logger<D> {
 
   constructor({ genesisHash }: LoggerOptions) {
     this.genesisHash = genesisHash
-    this.getHashForLog = log =>
+    this.getHashForLog = (log: any): string =>
       crypto
         .createHash('sha256')
         .update(JSON.stringify(log), 'utf8')

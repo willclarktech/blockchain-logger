@@ -14,20 +14,18 @@ import type {
   Network,
   Transaction,
 } from 'bitcoinjs-lib'
-import Logger from './base.logger'
-import type { LoggerOptions } from './base.types'
 
 type PushTransactionResponse = {
   error: ?{ message: string },
 }
 
-type TestnetLoggerOptions = LoggerOptions & {
+type TestnetLoggerOptions = {
   maxFee: ?number,
   prefix: ?string,
   privateKey: string,
 }
 
-class TestnetLogger<D> extends Logger<D> {
+class TestnetLogger {
   client: Axios
   keyPair: ECPairType
   maxFee: ?number
@@ -35,7 +33,6 @@ class TestnetLogger<D> extends Logger<D> {
   prefix: Buffer
 
   constructor(options: TestnetLoggerOptions): void {
-    super(options)
     this.client = axios
     this.network = networks.testnet
 
