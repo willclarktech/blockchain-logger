@@ -2,12 +2,8 @@
 import fs from 'fs'
 import { flatten } from 'lodash'
 import Logger from '../base'
-import type { Log, LoggerOptions } from '../base/types'
-
-type LocalFileLoggerOptions = LoggerOptions & {
-  logPath: string,
-  logFilePrefix: ?string,
-}
+import type { Log } from '../base/types'
+import type { LocalFileLoggerOptions } from './types'
 
 class LocalFileLogger<D> extends Logger<D> {
   logPath: string
