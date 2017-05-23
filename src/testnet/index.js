@@ -55,7 +55,7 @@ class TestnetLogger {
 
   async getLogs(n: ?number): Promise<Array<string>> {
     const address = this.keyPair.getAddress()
-    const limit = n ? `&limit=${n}` : ''
+    const limit = `&limit=${n || 100}`
     const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
     return this.client.get(url)
       .then(response => response.data.op_returns)
