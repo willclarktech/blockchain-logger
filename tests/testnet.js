@@ -1,3 +1,4 @@
+// @flow
 import assert from 'assert'
 import { TestnetLogger } from '../src'
 
