@@ -6,13 +6,21 @@ import type {
   LoggerOptions,
   LogWithoutHash,
 } from './types'
+import BlockchainLogger from '../testnet'
 
 class Logger<D> {
+  blockchainLogger: ?BlockchainLogger
   genesisHash: string
   mostRecentHash: ?string
   getHashForLog: (log: LogWithoutHash<D>) => string
 
-  constructor({ genesisHash }: LoggerOptions) {
+  constructor({
+    genesisHash,
+    blockchainOptions,
+  }: LoggerOptions) {
+    this.blockchainLogger = blockchainOptions
+      ? new BlockchainLogger(blockchainOptions)
+      : null
     this.genesisHash = genesisHash
     this.getHashForLog = (log: any): string =>
       crypto
@@ -47,7 +55,7 @@ class Logger<D> {
     }
   }
 
-  getLoggedData(ensureHashConsistency: ?boolean): Promise<Array<D>> {
+  async getLoggedData(ensureHashConsistency: ?boolean): Promise<Array<D>> {
     const removeInconsistentLogs = (aggregator: LogAggregator, log: Log<D>): LogAggregator => {
       const { previousHash, validLogs } = aggregator
       const { hash, meta } = log
@@ -94,6 +102,12 @@ class Logger<D> {
     const logString = JSON.stringify(log)
     return this.store(logString)
       .then(this.setMostRecentHash.bind(this, log.hash))
+      .then(hash => this.blockchainLogger
+        ? this.blockchainLogger
+          .store(hash)
+          .then(() => hash)
+        : hash,
+      )
   }
 
   setMostRecentHash(hash: string): string {

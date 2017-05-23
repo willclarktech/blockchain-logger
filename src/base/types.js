@@ -1,4 +1,6 @@
 // @flow
+import type { TestnetLoggerOptions } from '../testnet/types'
+
 export type LogWithoutHash<D> = {
   data: D,
   meta: {|
@@ -17,5 +19,7 @@ export type LogAggregator = {|
 |}
 
 export type LoggerOptions = {
+  blockchainOptions: ?TestnetLoggerOptions,
   genesisHash: string,
+  privateKey: ?string,
 }
