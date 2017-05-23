@@ -5,6 +5,7 @@ const LOG = 'For good luck, I like my rhymes atrocious\nSupercalafragilisticexpi
 
 const testnetLogger = new TestnetLogger({
   genesisHash: 'abc',
+  maxFee: 5000,
   privateKey: process.env.PRIVATE_KEY,
   prefix: 'BL',
 })

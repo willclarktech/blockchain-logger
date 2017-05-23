@@ -1,5 +1,5 @@
 // @flow
-import client from 'axios'
+import axios from 'axios'
 import {
   ECPair,
   networks,
@@ -22,22 +22,32 @@ type PushTransactionResponse = {
 }
 
 type TestnetLoggerOptions = LoggerOptions & {
-  privateKey: string,
+  maxFee: ?number,
   prefix: ?string,
+  privateKey: string,
 }
 
 class TestnetLogger<D> extends Logger<D> {
   client: Axios
   keyPair: ECPairType
+  maxFee: ?number
   network: Network
   prefix: Buffer
 
   constructor(options: TestnetLoggerOptions): void {
     super(options)
-    this.client = client
+    this.client = axios
     this.network = networks.testnet
-    this.keyPair = ECPair.fromWIF(options.privateKey, this.network)
-    this.prefix = Buffer.from(options.prefix || 'BL')
+
+    const {
+      maxFee,
+      prefix,
+      privateKey,
+    } = options
+
+    this.maxFee = maxFee
+    this.keyPair = ECPair.fromWIF(privateKey, this.network)
+    this.prefix = Buffer.from(prefix || 'BL')
   }
 
   async store(logString: string): Promise<boolean> {
@@ -69,7 +79,10 @@ class TestnetLogger<D> extends Logger<D> {
     const unspent = transactions[0]
     const inputTxId = unspent.txid
     const remainingBalance = unspent.value_int
-    const fee = await this.getFee()
+    const recommendedFee = await this.getFee()
+    const fee = this.maxFee
+      ? Math.min(recommendedFee, this.maxFee)
+      : recommendedFee
     const outputAmount = remainingBalance - fee
     const opReturnData = Buffer.concat([this.prefix, data])
     // $FlowFixMe: flow-type defs out of date
