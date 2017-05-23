@@ -3,10 +3,11 @@ import fs from 'fs'
 import Client from 'twitter'
 import _get from 'lodash/get'
 import Logger from '../base'
-import type { Log, LoggerOptions } from '../base/types'
+import type { Log } from '../base/types'
 import type {
   TwitterClient,
   TwitterGetStatusesResponse,
+  TwitterLoggerOptions,
   TwitterPostStatusResponse,
   TwitterUploadMediaResponse,
 } from './types'
@@ -19,15 +20,6 @@ const ensureExternalApiResponseShape = (path: string | Array<string>) => <R>(res
     throw new Error(`External API response falsy at path: ${pathString}.`)
   }
   return response
-}
-
-type TwitterLoggerOptions = LoggerOptions & {
-  accessTokenKey: string,
-  accessTokenSecret: string,
-  baseImageLocation: string,
-  consumerKey: string,
-  consumerSecret: string,
-  screenName: string,
 }
 
 class TwitterLogger<D> extends Logger<D> {

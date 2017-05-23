@@ -1,4 +1,6 @@
 // @flow
+import type { LoggerOptions } from '../base/types'
+
 export type TwitterGetStatusesResponse = Array<{
   id_str: string,
   extended_entities: {
@@ -35,4 +37,13 @@ export type TwitterClient = {
     media_base: string,
     request_options: {},
   },
+}
+
+export type TwitterLoggerOptions = LoggerOptions & {
+  accessTokenKey: string,
+  accessTokenSecret: string,
+  baseImageLocation: string,
+  consumerKey: string,
+  consumerSecret: string,
+  screenName: string,
 }
