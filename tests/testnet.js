@@ -10,7 +10,7 @@ const testnetLogger = new TestnetLogger({
   prefix: 'BL',
 })
 
-const sanityCheck = () => assert.ok(testnetLogger)
+const checkSanity = () => assert.ok(testnetLogger)
 
 const testStore = () =>
   testnetLogger
@@ -45,13 +45,19 @@ const testPushTransaction = () => {
     .then(responseData => assert.strictEqual(responseData.error.message, 'Missing inputs'))
 }
 
+const testGetLogs = () =>
+  testnetLogger
+    .getLogs()
+    .then(assert.ok)
+
 Promise.all([
-  sanityCheck(),
+  checkSanity(),
   testStore(),
   testGetFee(),
   testGetUnspentTransactions(),
   testBuildTransaction(),
   testPushTransaction(),
+  testGetLogs(),
 ])
   .catch(err => err.response
     ? console.error(err.response.data)

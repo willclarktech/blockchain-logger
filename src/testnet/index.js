@@ -6,9 +6,7 @@ import {
   script,
   TransactionBuilder,
 } from 'bitcoinjs-lib'
-import type {
-  Axios,
-} from 'axios'
+import type { Axios } from 'axios'
 import type {
   ECPair as ECPairType,
   Network,
@@ -46,6 +44,25 @@ class TestnetLogger {
     return this.buildTransaction(data)
       .then(this.pushTransaction.bind(this))
       .then(() => true)
+  }
+
+  async getLogs(n: ?number): Promise<Array<string>> {
+    const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
+    const address = this.keyPair.getAddress()
+    const limit = n ? `&limit=${n}` : ''
+    const url = `${base}/${address}/op-returns?dir=asc${limit}`
+    return this.client.get(url)
+      .then(response => response.data.op_returns)
+      .then(transactions => transactions.map(tx => tx.op_return.text))
+      .then(this.getLogsFromOpReturnTexts.bind(this))
+  }
+
+  getLogsFromOpReturnTexts(texts: Array<string>): Array<string> {
+    const regex = new RegExp(`^${this.prefix.toString()}`)
+    const startIndex = this.prefix.length
+    return texts
+      .filter(text => text.match(regex))
+      .map(text => text.slice(startIndex))
   }
 
   async getFee(): Promise<number> {
