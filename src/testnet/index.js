@@ -22,6 +22,7 @@ const SMARBIT_BASE_URL = 'https://testnet-api.smartbit.com.au/v1/blockchain'
 const SMARTBIT_ENDPOINT_ADDRESS = 'address'
 const SMARTBIT_ENDPOINT_OP_RETURNS = 'op-returns'
 const SMARTBIT_ENDPOINT_PUSHTX = 'pushtx'
+const SMARTBIT_ENDPOINT_UNSPENT = 'unspent'
 
 class TestnetLogger {
   client: Axios
@@ -78,7 +79,7 @@ class TestnetLogger {
 
   async getUnspentTransactions(): Promise<Array<Object>> {
     const address = this.keyPair.getAddress()
-    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/unspent`
+    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_UNSPENT}`
     return this.client.get(url)
       .then(response => response.data.unspent)
   }
