@@ -89,7 +89,7 @@ class TestnetLogger<D> extends Logger<D> {
     const opReturnAddress = script.nullData.output.encode(opReturnData)
 
     const tx = new TransactionBuilder(this.network)
-    tx.addInput(inputTxId, 0)
+    tx.addInput(inputTxId, unspent.n)
     tx.addOutput(myAddress, outputAmount)
     tx.addOutput(opReturnAddress, 0)
     // $FlowFixMe: flow-type defs out of date
