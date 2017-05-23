@@ -17,8 +17,9 @@ const testStore = () =>
     .store(LOG)
     .then(assert.ok)
 
-const testGetFee = () =>
-  testnetLogger.getFee()
+const testGetRecommendedFee = () =>
+  testnetLogger
+    .getRecommendedFee()
     .then(fee => assert.ok(typeof fee === 'number'))
 
 const testGetUnspentTransactions = () =>
@@ -30,9 +31,11 @@ const testGetUnspentTransactions = () =>
     })
 
 const testBuildTransaction = () => Promise.all([
-  testnetLogger.buildTransaction(Buffer.from(LOG))
+  testnetLogger
+    .buildTransaction(Buffer.from(LOG))
     .then(assert.ok),
-  testnetLogger.buildTransaction(Buffer.alloc(79, 'A'))
+  testnetLogger
+    .buildTransaction(Buffer.alloc(79, 'A'))
     .then(assert.fail, assert.ok),
 ])
 
@@ -53,7 +56,7 @@ const testGetLogs = () =>
 Promise.all([
   checkSanity(),
   testStore(),
-  testGetFee(),
+  testGetRecommendedFee(),
   testGetUnspentTransactions(),
   testBuildTransaction(),
   testPushTransaction(),

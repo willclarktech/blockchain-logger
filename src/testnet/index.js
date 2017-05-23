@@ -17,6 +17,12 @@ import type {
   TestnetLoggerOptions,
 } from './types'
 
+const RECOMMENDED_FEES_URL = 'https://bitcoinfees.21.co/api/v1/fees/recommended'
+const SMARBIT_BASE_URL = 'https://testnet-api.smartbit.com.au/v1/blockchain'
+const SMARTBIT_ENDPOINT_ADDRESS = 'address'
+const SMARTBIT_ENDPOINT_OP_RETURNS = 'op-returns'
+const SMARTBIT_ENDPOINT_PUSHTX = 'pushtx'
+
 class TestnetLogger {
   client: Axios
   keyPair: ECPairType
@@ -36,10 +42,10 @@ class TestnetLogger {
 
     this.maxFee = maxFee
     this.keyPair = ECPair.fromWIF(privateKey, this.network)
-    this.prefix = Buffer.from(prefix || 'BL')
+    this.prefix = Buffer.from(prefix || '')
   }
 
-  async store(logString: string): Promise<boolean> {
+  async store(logString: string | Buffer): Promise<boolean> {
     const data = Buffer.from(logString)
     return this.buildTransaction(data)
       .then(this.pushTransaction.bind(this))
@@ -47,10 +53,9 @@ class TestnetLogger {
   }
 
   async getLogs(n: ?number): Promise<Array<string>> {
-    const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
     const address = this.keyPair.getAddress()
     const limit = n ? `&limit=${n}` : ''
-    const url = `${base}/${address}/op-returns?dir=asc${limit}`
+    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
     return this.client.get(url)
       .then(response => response.data.op_returns)
       .then(transactions => transactions.map(tx => tx.op_return.text))
@@ -65,17 +70,15 @@ class TestnetLogger {
       .map(text => text.slice(startIndex))
   }
 
-  async getFee(): Promise<number> {
+  async getRecommendedFee(): Promise<number> {
     const medianTransactionSize = 226 // bytes
-    const url = 'https://bitcoinfees.21.co/api/v1/fees/recommended'
-    return this.client.get(url)
+    return this.client.get(RECOMMENDED_FEES_URL)
       .then(response => response.data.fastestFee * medianTransactionSize)
   }
 
   async getUnspentTransactions(): Promise<Array<Object>> {
-    const base = 'https://testnet-api.smartbit.com.au/v1/blockchain/address'
     const address = this.keyPair.getAddress()
-    const url = `${base}/${address}/unspent`
+    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/unspent`
     return this.client.get(url)
       .then(response => response.data.unspent)
   }
@@ -87,7 +90,7 @@ class TestnetLogger {
     const unspent = transactions[0]
     const inputTxId = unspent.txid
     const remainingBalance = unspent.value_int
-    const recommendedFee = await this.getFee()
+    const recommendedFee = await this.getRecommendedFee()
     const fee = this.maxFee
       ? Math.min(recommendedFee, this.maxFee)
       : recommendedFee
@@ -108,8 +111,9 @@ class TestnetLogger {
   }
 
   async pushTransaction(transaction: Transaction): Promise<PushTransactionResponse> {
+    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_PUSHTX}`
     return this.client.post(
-      'https://testnet-api.smartbit.com.au/v1/blockchain/pushtx',
+      url,
       { hex: transaction.toHex() },
     )
       .then(response => response.data)
