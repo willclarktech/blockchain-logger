@@ -14,34 +14,38 @@ import type {
 } from 'bitcoinjs-lib'
 import type {
   PushTransactionResponse,
-  TestnetLoggerOptions,
+  BlockchainLoggerOptions,
 } from './types'
 
 const RECOMMENDED_FEES_URL = 'https://bitcoinfees.21.co/api/v1/fees/recommended'
-const SMARBIT_BASE_URL = 'https://testnet-api.smartbit.com.au/v1/blockchain'
+const SMARTBIT_BASE_URL_TESTNET = 'https://testnet-api.smartbit.com.au/v1/blockchain'
+const SMARTBIT_BASE_URL_BITCOIN = 'https://api.smartbit.com.au/v1/blockchain'
 const SMARTBIT_ENDPOINT_ADDRESS = 'address'
 const SMARTBIT_ENDPOINT_OP_RETURNS = 'op-returns'
 const SMARTBIT_ENDPOINT_PUSHTX = 'pushtx'
 const SMARTBIT_ENDPOINT_UNSPENT = 'unspent'
 const SMARTBIT_MAX_LIMIT = 1000
 
-class TestnetLogger {
+class BlockchainLogger {
+  apiBaseUrl: string
   client: Axios
   keyPair: ECPairType
   maxFee: ?number
   network: Network
   prefix: Buffer
 
-  constructor(options: TestnetLoggerOptions): void {
+  constructor(options: BlockchainLoggerOptions): void {
     this.client = axios
-    this.network = networks.testnet
 
     const {
       maxFee,
       prefix,
       privateKey,
+      testnet,
     } = options
 
+    this.network = testnet ? networks.testnet : networks.bitcoin
+    this.apiBaseUrl = testnet ? SMARTBIT_BASE_URL_TESTNET : SMARTBIT_BASE_URL_BITCOIN
     this.maxFee = maxFee
     this.keyPair = ECPair.fromWIF(privateKey, this.network)
     this.prefix = Buffer.from(prefix || '')
@@ -57,7 +61,7 @@ class TestnetLogger {
   async getLogs(n: ?number): Promise<Array<string>> {
     const address = this.keyPair.getAddress()
     const limit = `&limit=${n || SMARTBIT_MAX_LIMIT}`
-    const initialUrl = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
+    const initialUrl = `${this.apiBaseUrl}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
     const getOpReturns = url =>
       this.client
         .get(url)
@@ -90,15 +94,18 @@ class TestnetLogger {
 
   async getUnspentTransactions(): Promise<Array<Object>> {
     const address = this.keyPair.getAddress()
-    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_UNSPENT}`
+    const url = `${this.apiBaseUrl}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_UNSPENT}`
     return this.client.get(url)
       .then(response => response.data.unspent)
   }
 
   async buildTransaction(data: Buffer): Promise<Transaction> {
     if (data.length > 80 - this.prefix.length) throw new Error('Data is too long to store via OP_RETURN.')
+
     const myAddress = this.keyPair.getAddress()
     const transactions = await this.getUnspentTransactions()
+    if (!transactions.length) throw new Error('No unspent transactions for this address.')
+
     const unspent = transactions[0]
     const inputTxId = unspent.txid
     const remainingBalance = unspent.value_int
@@ -123,7 +130,7 @@ class TestnetLogger {
   }
 
   async pushTransaction(transaction: Transaction): Promise<PushTransactionResponse> {
-    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_PUSHTX}`
+    const url = `${this.apiBaseUrl}/${SMARTBIT_ENDPOINT_PUSHTX}`
     return this.client.post(
       url,
       { hex: transaction.toHex() },
@@ -132,4 +139,4 @@ class TestnetLogger {
   }
 }
 
-export default TestnetLogger
+export default BlockchainLogger

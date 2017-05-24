@@ -1,14 +1,21 @@
 // @flow
 import assert from 'assert'
-import { TestnetLogger } from '../src'
+import { BlockchainLogger } from '../src'
 
 const LOG = 'For good luck, I like my rhymes atrocious\nSupercalafragilisticexpialidocious'
 
-const testnetLogger = new TestnetLogger({
+const testnetLogger = new BlockchainLogger({
   genesisHash: 'abc',
   maxFee: 5000,
-  privateKey: process.env.PRIVATE_KEY,
+  privateKey: process.env.PRIVATE_KEY_TESTNET,
   prefix: 'TEST',
+  testnet: true,
+})
+
+const realBitcoinLogger = new BlockchainLogger({
+  maxFee: 0,
+  prefix: 'BL',
+  privateKey: process.env.PRIVATE_KEY_BITCOIN,
 })
 
 const checkSanity = () => assert.ok(testnetLogger)
@@ -27,6 +34,10 @@ const testGetUnspentTransactions = () =>
   testnetLogger
     .getUnspentTransactions()
     .then(transactions => {
+      if (!transactions.length) {
+        console.error('No unspent transactions found.')
+        return
+      }
       const tx = transactions[0]
       assert.ok(tx.addresses[0] === testnetLogger.keyPair.getAddress())
     })
@@ -54,6 +65,13 @@ const testGetLogs = () =>
     .getLogs()
     .then(logs => assert.ok(logs.length > 4))
 
+const testRealBitcoin = () => {
+  assert.ok(realBitcoinLogger)
+  realBitcoinLogger
+    .store(LOG)
+    .then(assert.fail, assert.ok)
+}
+
 Promise.all([
   checkSanity(),
   testStore(),
@@ -62,6 +80,7 @@ Promise.all([
   testBuildTransaction(),
   testPushTransaction(),
   testGetLogs(),
+  testRealBitcoin(),
 ])
   .catch(err => err.response
     ? console.error(err.response.data)

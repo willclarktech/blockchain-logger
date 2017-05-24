@@ -6,7 +6,7 @@ import type {
   LoggerOptions,
   LogWithoutHash,
 } from './types'
-import BlockchainLogger from '../testnet'
+import BlockchainLogger from '../blockchain'
 
 class Logger<D> {
   blockchainLogger: ?BlockchainLogger

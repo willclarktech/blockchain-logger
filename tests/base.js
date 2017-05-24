@@ -9,7 +9,8 @@ const baseLogger = new BaseLogger({
   blockchainOptions: {
     maxFee: 5000,
     prefix: 'TESTING',
-    privateKey: process.env.PRIVATE_KEY,
+    privateKey: process.env.PRIVATE_KEY_TESTNET,
+    testnet: true,
   },
 })
 
