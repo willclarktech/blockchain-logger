@@ -66,23 +66,23 @@ logger.log(data)
 ### Retrieve logs
 
 ```js
-const ensureHashConsistency = true
-logger.getLoggedData(ensureHashConsistency)
+logger.getLoggedData(ensureHashConsistency=true)
 ```
 
-## Testnet logger
+## Blockchain logger
 
-There’s also a logger for the [Bitcoin Testnet](https://en.bitcoin.it/wiki/Testnet). This stores data in transactions with an [`OP_RETURN`](https://en.bitcoin.it/wiki/OP_RETURN) output. Since the length of data that can be stored in such a transaction is limited to 80 bytes, this logger does not provide the blockchain properties of the other loggers, but could be used in conjunction with them to ensure integrity by storing hashes in a decentralised database (albeit only the Testnet currently).
+There’s also a logger for the Bitcoin blockchain or the [Bitcoin Testnet](https://en.bitcoin.it/wiki/Testnet). This stores data in transactions with an [`OP_RETURN`](https://en.bitcoin.it/wiki/OP_RETURN) output. Since the length of data that can be stored in such a transaction is limited to 80 bytes, this logger does not provide the blockchain properties of the other loggers, but can be used to store small amounts of data, or in conjunction with the other loggers to ensure integrity by storing hashes in a decentralised database.
 
-### Create a Testnet logger
+### Create a Blockchain logger
 
 ```js
-import { TestnetLogger } from 'blockchain-logger'
+import { BlockchainLogger } from 'blockchain-logger'
 
-const logger = new TestnetLogger({
+const logger = new BlockchainLogger({
   maxFee: 5000, // satoshis
   prefix: 'BL', // prepended to everything you log (uses up characters!)
   privateKey: 'generate-this-using-secure-tools',
+  testnet: true,
 })
 ```
 
@@ -109,7 +109,7 @@ This returns an array of strings of text that has been stored using `OP_RETURN` 
 
 ### Interplay with other loggers
 
-The local file and Twitter loggers can use the Testnet logger to validate hash integrity. Just provide either one with an additional config option `blockchainOptions`, which should be a nested object containing the Testnet logger options. E.g.:
+The local file and Twitter loggers can use the Blockchain logger to validate hash integrity. Just provide either one with an additional config option `blockchainOptions`, which should be a nested object containing the Blockchain logger options. E.g.:
 
 ```js
 
@@ -123,6 +123,9 @@ const logger = new LocalFileLogger({
     maxFee: 5000,
     prefix: 'BL',
     privateKey: 'generate-this-using-secure-tools',
+    testnet: true,
   },
 })
 ```
+
+Now if you call `logger.getLoggedData(ensureHashConsistency=true)`, it will loop through the hashes stored on the Bitcoin/Testnet blockchain, and make sure that the hashes for your logs appear in that order on the relevant blockchain.
