@@ -23,6 +23,7 @@ const SMARTBIT_ENDPOINT_ADDRESS = 'address'
 const SMARTBIT_ENDPOINT_OP_RETURNS = 'op-returns'
 const SMARTBIT_ENDPOINT_PUSHTX = 'pushtx'
 const SMARTBIT_ENDPOINT_UNSPENT = 'unspent'
+const SMARTBIT_MAX_LIMIT = 1000
 
 class TestnetLogger {
   client: Axios
@@ -55,10 +56,20 @@ class TestnetLogger {
 
   async getLogs(n: ?number): Promise<Array<string>> {
     const address = this.keyPair.getAddress()
-    const limit = `&limit=${n || 100}`
-    const url = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
-    return this.client.get(url)
-      .then(response => response.data.op_returns)
+    const limit = `&limit=${n || SMARTBIT_MAX_LIMIT}`
+    const initialUrl = `${SMARBIT_BASE_URL}/${SMARTBIT_ENDPOINT_ADDRESS}/${address}/${SMARTBIT_ENDPOINT_OP_RETURNS}?dir=asc${limit}`
+    const getOpReturns = url =>
+      this.client
+        .get(url)
+        .then(response => {
+          const { op_returns: opReturns, paging } = response.data
+          return paging.next
+            ? getOpReturns(`${initialUrl}&next=${paging.next}`)
+              .then(moreOpReturns => [...opReturns, ...moreOpReturns])
+            : opReturns
+        })
+
+    return getOpReturns(initialUrl)
       .then(transactions => transactions.map(tx => tx.op_return.text))
       .then(this.getLogsFromOpReturnTexts.bind(this))
   }

@@ -8,7 +8,7 @@ const testnetLogger = new TestnetLogger({
   genesisHash: 'abc',
   maxFee: 5000,
   privateKey: process.env.PRIVATE_KEY,
-  prefix: 'BL',
+  prefix: 'TEST',
 })
 
 const checkSanity = () => assert.ok(testnetLogger)
@@ -52,7 +52,7 @@ const testPushTransaction = () => {
 const testGetLogs = () =>
   testnetLogger
     .getLogs()
-    .then(assert.ok)
+    .then(logs => assert.ok(logs.length > 4))
 
 Promise.all([
   checkSanity(),
