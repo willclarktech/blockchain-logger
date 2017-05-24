@@ -86,7 +86,7 @@ const logger = new TestnetLogger({
 })
 ```
 
-The private key is needed to sign the transactions created to store logs in `OP_RETURN` outputs. The transaction sends 0 satoshis to the `OP_RETURN` script, and the rest back to the input address, minus a mining fee.
+Only the private key is required. The private key is needed to sign the transactions created to store logs in `OP_RETURN` outputs. The transaction sends 0 satoshis to the `OP_RETURN` script, and the rest back to the input address, minus a mining fee.
 
 The logger uses [21.co’s recommended fees](https://bitcoinfees.21.co/) to calculate what fee to pay for the logging transaction, but you can set a limit with `maxFee`.
 
@@ -106,3 +106,23 @@ logger.getLogs()
 ```
 
 This returns an array of strings of text that has been stored using `OP_RETURN` transactions for the specified address, which include the prefix (if you provided one). The prefix is stripped off.
+
+### Interplay with other loggers
+
+The local file and Twitter loggers can use the Testnet logger to validate hash integrity. Just provide either one with an additional config option `blockchainOptions`, which should be a nested object containing the Testnet logger options. E.g.:
+
+```js
+
+import { LocalFileLogger } from 'blockchain-logger'
+
+const logger = new LocalFileLogger({
+  genesisHash: 'abc123',
+  logPath: './logs/',
+  logFilePrefix: 'actions',
+  blockchainOptions: {
+    maxFee: 5000,
+    prefix: 'BL',
+    privateKey: 'generate-this-using-secure-tools',
+  },
+})
+```
